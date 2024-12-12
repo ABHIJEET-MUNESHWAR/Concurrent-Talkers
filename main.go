@@ -9,8 +9,6 @@ import (
 // the <icon src="AllIcons.Actions.Execute"/> icon in the gutter and select the <b>Run</b> menu item from here.</p>
 
 func main() {
-	const eof = "__EOF__"
-
 	str := "one,two,,four"
 	in := make(chan string)
 	go func() {
@@ -18,11 +16,12 @@ func main() {
 		for _, word := range words {
 			in <- word
 		}
-		in <- eof
+		close(in)
 	}()
+
 	for {
-		word := <-in
-		if word == eof {
+		word, ok := <-in
+		if !ok {
 			break
 		}
 		if word != "" {
